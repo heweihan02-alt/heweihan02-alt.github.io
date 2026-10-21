@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -6,62 +7,404 @@
 <title>我的主页</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0f1115;
+    --card: #171a21;
+    --line: #262b36;
+    --accent: #3b82f6;
+  }
+  html, body { height: 100%; }
   body {
     font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
-    background: #0f1115;
+    background: var(--bg);
     color: #e8e8e8;
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 24px;
+    overflow-x: hidden;
+    position: relative;
   }
+
+  /* ===== 背景视频 ===== */
+  .bg-video {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1.4s ease;
+  }
+  .bg-video.on { opacity: 1; }
+
+  /* ===== 卡片 ===== */
   .card {
+    position: relative;
+    z-index: 1;
     max-width: 640px;
     width: 100%;
-    background: #171a21;
-    border: 1px solid #262b36;
-    border-radius: 16px;
+    background:
+      linear-gradient(150deg,
+        rgba(255, 255, 255, .07) 0%,
+        rgba(255, 255, 255, .02) 24%,
+        rgba(6, 9, 14, .55) 62%,
+        rgba(255, 255, 255, .04) 100%),
+      rgba(9, 12, 18, .66);
+    backdrop-filter: blur(26px) saturate(170%);
+    -webkit-backdrop-filter: blur(26px) saturate(170%);
+    border: 1px solid rgba(255, 255, 255, .13);
+    border-radius: 18px;
     padding: 40px 32px;
+    overflow: hidden;
+    transform-style: preserve-3d;
+    box-shadow:
+      0 30px 70px -30px rgba(0, 0, 0, .85),
+      inset 0 1px 0 rgba(255, 255, 255, .22),
+      inset 0 -1px 0 rgba(0, 0, 0, .35);
+    transition: transform .35s cubic-bezier(.2, .8, .2, 1), box-shadow .35s ease, border-color .35s ease;
+    animation: cardIn .8s cubic-bezier(.2, .8, .2, 1) backwards;
   }
-  h1 { font-size: 28px; margin-bottom: 8px; }
-  .sub { color: #8b93a7; margin-bottom: 24px; }
-  p { line-height: 1.8; color: #c2c8d4; margin-bottom: 20px; }
-  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(26px) scale(.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .card:hover {
+    border-color: rgba(255, 255, 255, .24);
+    box-shadow:
+      0 34px 80px -30px rgba(59, 130, 246, .45),
+      inset 0 1px 0 rgba(255, 255, 255, .30),
+      inset 0 -1px 0 rgba(0, 0, 0, .35);
+  }
+
+  /* 玻璃上缓慢划过的高光 */
+  .sheen {
+    position: absolute;
+    top: -60%;
+    left: -80%;
+    width: 55%;
+    height: 220%;
+    pointer-events: none;
+    background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, .10) 42%,
+      rgba(255, 255, 255, .20) 50%,
+      rgba(255, 255, 255, .10) 58%,
+      transparent);
+    transform: rotate(20deg);
+    animation: sheenMove 8s ease-in-out 1.4s infinite;
+  }
+  @keyframes sheenMove {
+    0%        { transform: translateX(0) rotate(20deg); }
+    72%, 100% { transform: translateX(340%) rotate(20deg); }
+  }
+
+  /* 鼠标跟随光晕 */
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      320px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(59, 130, 246, .18),
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity .35s ease;
+    pointer-events: none;
+  }
+  .card:hover::before { opacity: 1; }
+
+  /* 顶部流光描边 */
+  .card::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 1px;
+    background: linear-gradient(90deg, transparent, #60a5fa, #a855f7, transparent);
+    animation: borderSweep 5s linear infinite;
+  }
+  @keyframes borderSweep {
+    to { left: 100%; }
+  }
+
+  /* ===== 标题 ===== */
+  h1 {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: .3px;
+    margin-bottom: 8px;
+    background: linear-gradient(90deg, #f4f6ff, #a3b8ff, #f4f6ff);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shine 6s linear infinite, riseIn .7s .1s cubic-bezier(.2, .8, .2, 1) backwards;
+    cursor: default;
+  }
+  @keyframes shine {
+    to { background-position: 200% center; }
+  }
+  @keyframes riseIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .sub {
+    color: #9aa3b8;
+    font-weight: 600;
+    margin-bottom: 24px;
+    animation: riseIn .7s .2s cubic-bezier(.2, .8, .2, 1) backwards;
+  }
+  p {
+    line-height: 1.8;
+    font-weight: 500;
+    color: #d3d9e6;
+    margin-bottom: 20px;
+    animation: riseIn .7s .3s cubic-bezier(.2, .8, .2, 1) backwards;
+  }
+
+  /* ===== 标签 ===== */
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 28px;
+  }
   .tag {
     background: #222836;
-    color: #9fb4ff;
+    color: #a8bcff;
     padding: 6px 12px;
     border-radius: 999px;
     font-size: 13px;
+    font-weight: 600;
+    cursor: default;
+    transition: transform .25s cubic-bezier(.2, .8, .2, 1),
+                background .25s ease, color .25s ease, box-shadow .25s ease;
+    animation: tagPop .5s cubic-bezier(.2, .8, .2, 1) backwards;
+    animation-delay: calc(.42s + var(--i, 0) * .09s);
   }
+  @keyframes tagPop {
+    from { opacity: 0; transform: translateY(10px) scale(.8); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .tag:hover {
+    transform: translateY(-3px) scale(1.06);
+    background: #2c3448;
+    color: #dbe6ff;
+    box-shadow: 0 8px 18px -8px rgba(59, 130, 246, .8);
+  }
+
+  /* ===== 按钮 ===== */
   a {
+    position: relative;
     display: inline-block;
-    background: #3b82f6;
+    overflow: hidden;
+    background: var(--accent);
     color: #fff;
+    font-weight: 600;
+    letter-spacing: .2px;
     text-decoration: none;
     padding: 10px 20px;
     border-radius: 8px;
     margin-right: 10px;
+    transition: transform .25s cubic-bezier(.2, .8, .2, 1),
+                box-shadow .25s ease, background .25s ease;
+    animation: riseIn .7s .55s cubic-bezier(.2, .8, .2, 1) backwards;
   }
-  a.ghost { background: transparent; border: 1px solid #3a4152; color: #c2c8d4; }
-  footer { margin-top: 28px; font-size: 13px; color: #5c6474; }
+  a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px -10px rgba(59, 130, 246, .95);
+  }
+  a:active { transform: translateY(0) scale(.97); }
+  /* 扫光 */
+  a::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -120%;
+    width: 60%; height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,.45), transparent);
+    transform: skewX(-20deg);
+    transition: none;
+  }
+  a:hover::after { animation: sweep .7s ease; }
+  @keyframes sweep {
+    to { left: 130%; }
+  }
+  a.ghost {
+    background: transparent;
+    border: 1px solid #3a4152;
+    color: #c2c8d4;
+    animation-delay: .63s;
+  }
+  a.ghost:hover {
+    border-color: #6b7690;
+    color: #fff;
+    background: rgba(255,255,255,.04);
+    box-shadow: 0 12px 26px -14px rgba(255,255,255,.45);
+  }
+
+  footer {
+    position: relative;
+    margin-top: 28px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #6b7486;
+    animation: riseIn .7s .7s cubic-bezier(.2, .8, .2, 1) backwards;
+  }
+
+  /* 光标小光点（跟随鼠标） */
+  .cursor-dot {
+    position: fixed;
+    top: 0; left: 0;
+    width: 10px; height: 10px;
+    margin: -5px 0 0 -5px;
+    border-radius: 50%;
+    background: rgba(96, 165, 250, .9);
+    box-shadow: 0 0 18px 4px rgba(96, 165, 250, .5);
+    pointer-events: none;
+    z-index: 9;
+    opacity: 0;
+    transition: opacity .3s ease;
+  }
+  body:hover .cursor-dot { opacity: 1; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .001ms !important;
+    }
+  }
 </style>
 </head>
 <body>
-  <div class="card">
+  <!-- 背景视频：muted + loop + playsinline，移动端也能自动播放 -->
+  <video class="bg-video" id="bgVideo" autoplay muted loop playsinline preload="auto"
+         poster="bg-poster.jpg" aria-hidden="true" tabindex="-1">
+    <source src="bg.mp4" type="video/mp4">
+  </video>
+
+  <div class="cursor-dot" id="dot" aria-hidden="true"></div>
+
+  <div class="card" id="card">
+    <div class="sheen" aria-hidden="true"></div>
     <h1>你好，我是HEWEIHAN</h1>
     <div class="sub">记录一些折腾和想法</div>
     <p>这个站点用 GitHub Pages 托管，域名通过 Cloudflare 解析。</p>
     <div class="tags">
-      <span class="tag">前端</span>
-      <span class="tag">折腾服务器</span>
-      <span class="tag">写点东西</s>
-       <span class="tag">搞一些莫名</span>
+      <span class="tag" style="--i:0">前端</span>
+      <span class="tag" style="--i:1">折腾服务器</span>
+      <span class="tag" style="--i:2">写点东西</span>
+      <span class="tag" style="--i:3">搞一些莫名</span>
     </div>
     <a href="https://github.com/heweihan02-alt">GitHub</a>
     <a class="ghost" href="mailto:heweihan9@outlook.com">联系我</a>
     <footer>© 2026 7891789.xyz</footer>
   </div>
+
+<script>
+  (function () {
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var video = document.getElementById('bgVideo');
+
+    // ===== 背景视频：淡入 + 后台自动暂停 =====
+    if (video) {
+      var showVideo = function () { video.classList.add('on'); };
+
+      if (reduce) {
+        // 尊重系统“减少动态”：只显示首帧（海报）
+        video.removeAttribute('autoplay');
+        video.pause();
+        showVideo();
+      } else {
+        video.addEventListener('loadeddata', showVideo);
+        video.addEventListener('playing', showVideo);
+        video.addEventListener('error', function () { video.style.display = 'none'; });
+        if (video.readyState >= 2) showVideo();
+
+        // 兜底：如果 2.5 秒后还是全透明（淡入没触发），直接显示
+        setTimeout(function () {
+          if (getComputedStyle(video).opacity === '0') video.style.opacity = '1';
+        }, 2500);
+
+        document.addEventListener('visibilitychange', function () {
+          if (document.hidden) {
+            video.pause();
+          } else {
+            var p = video.play();
+            if (p && p.catch) p.catch(function () {});
+          }
+        });
+      }
+    }
+
+    if (reduce) return;
+
+    var card = document.getElementById('card');
+    var dot = document.getElementById('dot');
+
+    // 鼠标光晕跟随 + 轻微 3D 倾斜
+    var raf = null;
+    var target = { rx: 0, ry: 0, mx: 50, my: 50 };
+
+    function apply() {
+      raf = null;
+      card.style.setProperty('--mx', target.mx + '%');
+      card.style.setProperty('--my', target.my + '%');
+      card.style.transform =
+        'perspective(900px) rotateX(' + target.rx.toFixed(2) + 'deg) rotateY(' +
+        target.ry.toFixed(2) + 'deg)';
+    }
+
+    function onMove(e) {
+      var pt = e.touches ? e.touches[0] : e;
+      var r = card.getBoundingClientRect();
+      var x = (pt.clientX - r.left) / r.width;
+      var y = (pt.clientY - r.top) / r.height;
+
+      target.mx = x * 100;
+      target.my = y * 100;
+      target.ry = (x - 0.5) * 8;
+      target.rx = (0.5 - y) * 8;
+
+      dot.style.transform = 'translate(' + pt.clientX + 'px,' + pt.clientY + 'px)';
+
+      if (!raf) raf = requestAnimationFrame(apply);
+    }
+
+    card.addEventListener('mousemove', onMove);
+    card.addEventListener('touchmove', onMove, { passive: true });
+
+    card.addEventListener('mouseleave', function () {
+      target.rx = 0; target.ry = 0;
+      if (!raf) raf = requestAnimationFrame(apply);
+    });
+
+    window.addEventListener('mousemove', function (e) {
+      dot.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
+    });
+
+    // 标签随机轻微浮动，更有生气
+    document.querySelectorAll('.tag').forEach(function (t, i) {
+      t.animate(
+        [
+          { translate: '0 0' },
+          { translate: '0 -4px' },
+          { translate: '0 0' }
+        ],
+        {
+          duration: 2600 + i * 320,
+          iterations: Infinity,
+          easing: 'ease-in-out',
+          delay: 900 + i * 180
+        }
+      );
+    });
+  })();
+</script>
 </body>
 </html>
