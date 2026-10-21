@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的主页</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #0f1115;
+    color: #e8e8e8;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .card {
+    max-width: 640px;
+    width: 100%;
+    background: #171a21;
+    border: 1px solid #262b36;
+    border-radius: 16px;
+    padding: 40px 32px;
+  }
+  h1 { font-size: 28px; margin-bottom: 8px; }
+  .sub { color: #8b93a7; margin-bottom: 24px; }
+  p { line-height: 1.8; color: #c2c8d4; margin-bottom: 20px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+  .tag {
+    background: #222836;
+    color: #9fb4ff;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+  }
+  a {
+    display: inline-block;
+    background: #3b82f6;
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    margin-right: 10px;
+  }
+  a.ghost { background: transparent; border: 1px solid #3a4152; color: #c2c8d4; }
+  footer { margin-top: 28px; font-size: 13px; color: #5c6474; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>你好，我是HEWEIHAN</h1>
+    <div class="sub">记录一些折腾和想法</div>
+    <p>这个站点用 GitHub Pages 托管，域名通过 Cloudflare 解析，不用服务器，也不用一直开电脑。</p>
+    <div class="tags">
+      <span class="tag">前端</span>
+      <span class="tag">折腾服务器</span>
+      <span class="tag">写点东西</span>
+    </div>
+    <a href="https://github.com/heweihan02-alt">GitHub</a>
+    <a class="ghost" href="mailto:heweihan9@outlook.com">联系我</a>
+    <footer>© 2026 7891789.xyz</footer>
+  </div>
+</body>
+</html>
