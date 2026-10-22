@@ -257,6 +257,8 @@
   .gb-wait-icon { font-size: 30px; line-height: 1; }
   .gb-wait-title { font-size: 16px; font-weight: 700; color: #c3cbdb; }
   .gb-wait-sub { font-size: 13px; line-height: 1.7; }
+  /* 注意：.gb-wait 自带 display:flex，会盖掉 hidden 属性的 display:none，需显式声明 */
+  .gb-wait[hidden] { display: none; }
 
   /* ===== 标题 ===== */
   h1 {
@@ -295,6 +297,13 @@
     text-shadow: 0 1px 8px rgba(0, 0, 0, .4);
     margin-bottom: 20px;
     animation: riseIn .7s .3s cubic-bezier(.2, .8, .2, 1) backwards;
+  }
+  /* 补充说明：比正文更低调一行 */
+  p.note {
+    font-size: 13px;
+    line-height: 1.7;
+    color: #8e99ad;
+    margin-top: -8px;
   }
 
   /* ===== 标签 ===== */
@@ -434,6 +443,7 @@
       <h1>你好，我是HEWEIHAN</h1>
       <div class="sub">记录一些折腾和想法</div>
       <p>这个站点用 GitHub Pages 托管，域名通过 Cloudflare 解析。</p>
+      <p class="note">现在这个域名还没放多少东西，以后会逐步完善。</p>
       <div class="tags">
         <span class="tag" style="--i:0">前端</span>
         <span class="tag" style="--i:1">折腾服务器</span>
@@ -459,8 +469,8 @@
       <!-- 设置完成前的占位 -->
       <div class="gb-wait" id="gbWait">
         <div class="gb-wait-icon" aria-hidden="true">💬</div>
-        <div class="gb-wait-title">留言板即将开放</div>
-        <div class="gb-wait-sub">三步小设置（约 3 分钟）完成后，这里就能互相留言了。<br>步骤见同目录《留言板使用说明.md》。</div>
+        <div class="gb-wait-title">留言板加载中…</div>
+        <div class="gb-wait-sub">正在连接 giscus，请稍候。<br>如果一直看不到留言框，请检查网络后刷新重试。</div>
       </div>
     </div>
 
@@ -624,9 +634,14 @@
       var frame = document.querySelector('.giscus-frame');
       if (frame) {
         clearInterval(poll);
-        frame.addEventListener('load', function () {
-          if (wait) wait.hidden = true;
-        });
+        var hideWait = function () { if (wait) wait.hidden = true; };
+        if (frame.classList.contains('giscus-frame--loading')) {
+          // 还在加载：等 load 事件；若事件已错过，2.5 秒后兜底收起
+          frame.addEventListener('load', hideWait);
+          setTimeout(hideWait, 2500);
+        } else {
+          hideWait(); // 已经加载完了（loading 类已被移除）
+        }
         return;
       }
       if (tries === 25) {
