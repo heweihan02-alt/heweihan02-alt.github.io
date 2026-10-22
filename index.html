@@ -597,6 +597,7 @@
       repo: 'heweihan02-alt/heweihan02-alt.github.io',  // 存放留言的仓库
       repoId: 'MDEwOlJlcG9zaXRvcnkxNDI4NDE5MDcy',        // 仓库 ID（已算好，一般不用改）
       category: 'Announcements',                          // 留言存放的讨论分类
+      categoryId: 'DIC_kwDOVSPyAM4DJTqt',                 // 该分类的 ID：首次建帖必须带上，否则会报 Unable to create discussion
       mapping: 'specific',                                // 用固定标题对应到留言帖
       term: 'Guestbook',                                  // 留言帖标题
       theme: 'transparent_dark',                          // 深色透明主题，贴合玻璃卡片
@@ -615,6 +616,7 @@
     s.setAttribute('data-repo', GISCUS_CONFIG.repo);
     s.setAttribute('data-repo-id', GISCUS_CONFIG.repoId);
     s.setAttribute('data-category', GISCUS_CONFIG.category);
+    s.setAttribute('data-category-id', GISCUS_CONFIG.categoryId);
     s.setAttribute('data-mapping', GISCUS_CONFIG.mapping);
     s.setAttribute('data-term', GISCUS_CONFIG.term);
     s.setAttribute('data-strict', '0');
