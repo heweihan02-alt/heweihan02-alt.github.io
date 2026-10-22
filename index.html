@@ -203,6 +203,61 @@
     pointer-events: none;
   }
 
+  /* ===== 布局：两张卡片纵向排列 ===== */
+  .layout {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 640px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 56px;
+  }
+  .layout .card { max-width: none; }
+
+  /* ===== 留言板卡片 ===== */
+  .card.guestbook {
+    animation: cardIn .8s .15s cubic-bezier(.2, .8, .2, 1) backwards,
+               floatY 8s ease-in-out 1.5s infinite;
+  }
+  .gb-title {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: .3px;
+    margin-bottom: 6px;
+    text-shadow: 0 1px 10px rgba(0, 0, 0, .45);
+    background: linear-gradient(90deg, #f4f6ff, #a3b8ff, #f4f6ff);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shine 6s linear infinite, riseIn .7s .2s cubic-bezier(.2, .8, .2, 1) backwards;
+  }
+  .gb-sub {
+    color: #aab4c8;
+    font-weight: 600;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, .4);
+    margin-bottom: 20px;
+    animation: riseIn .7s .3s cubic-bezier(.2, .8, .2, 1) backwards;
+  }
+  #giscus { width: 100%; margin-top: 4px; }
+  .giscus-frame { width: 100%; border: none; }
+  .gb-wait {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 28px 16px 22px;
+    text-align: center;
+    color: #8a94a8;
+    animation: riseIn .7s .35s cubic-bezier(.2, .8, .2, 1) backwards;
+  }
+  .gb-wait-icon { font-size: 30px; line-height: 1; }
+  .gb-wait-title { font-size: 16px; font-weight: 700; color: #c3cbdb; }
+  .gb-wait-sub { font-size: 13px; line-height: 1.7; }
+
   /* ===== 标题 ===== */
   h1 {
     font-size: 28px;
@@ -370,22 +425,45 @@
 
   <div class="cursor-dot" id="dot" aria-hidden="true"></div>
 
-  <div class="card" id="card">
-    <div class="sheen" aria-hidden="true"></div>
-    <div class="rim" aria-hidden="true"></div>
-    <div class="spec" aria-hidden="true"></div>
-    <h1>你好，我是HEWEIHAN</h1>
-    <div class="sub">记录一些折腾和想法</div>
-    <p>这个站点用 GitHub Pages 托管，域名通过 Cloudflare 解析。</p>
-    <div class="tags">
-      <span class="tag" style="--i:0">前端</span>
-      <span class="tag" style="--i:1">折腾服务器</span>
-      <span class="tag" style="--i:2">写点东西</span>
-      <span class="tag" style="--i:3">搞一些莫名</span>
+  <div class="layout">
+
+    <div class="card" id="card">
+      <div class="sheen" aria-hidden="true"></div>
+      <div class="rim" aria-hidden="true"></div>
+      <div class="spec" aria-hidden="true"></div>
+      <h1>你好，我是HEWEIHAN</h1>
+      <div class="sub">记录一些折腾和想法</div>
+      <p>这个站点用 GitHub Pages 托管，域名通过 Cloudflare 解析。</p>
+      <div class="tags">
+        <span class="tag" style="--i:0">前端</span>
+        <span class="tag" style="--i:1">折腾服务器</span>
+        <span class="tag" style="--i:2">写点东西</span>
+        <span class="tag" style="--i:3">搞一些莫名</span>
+      </div>
+      <a href="https://github.com/heweihan02-alt">GitHub</a>
+      <a class="ghost" href="mailto:heweihan9@outlook.com">联系我</a>
+      <footer>© 2026 7891789.xyz</footer>
     </div>
-    <a href="https://github.com/heweihan02-alt">GitHub</a>
-    <a class="ghost" href="mailto:heweihan9@outlook.com">联系我</a>
-    <footer>© 2026 7891789.xyz</footer>
+
+    <!-- ===== 留言板 ===== -->
+    <div class="card guestbook">
+      <div class="sheen" aria-hidden="true"></div>
+      <div class="rim" aria-hidden="true"></div>
+      <div class="spec" aria-hidden="true"></div>
+      <h2 class="gb-title">留言板</h2>
+      <div class="gb-sub">路过不妨留个言，欢迎交流</div>
+
+      <!-- Giscus 留言，设置完成后自动加载 -->
+      <div class="giscus" id="giscus" hidden></div>
+
+      <!-- 设置完成前的占位 -->
+      <div class="gb-wait" id="gbWait">
+        <div class="gb-wait-icon" aria-hidden="true">💬</div>
+        <div class="gb-wait-title">留言板即将开放</div>
+        <div class="gb-wait-sub">三步小设置（约 3 分钟）完成后，这里就能互相留言了。<br>步骤见同目录《留言板使用说明.md》。</div>
+      </div>
+    </div>
+
   </div>
 
 <script>
@@ -496,6 +574,66 @@
         }
       );
     });
+  })();
+</script>
+
+<script>
+  (function () {
+    // ============ 留言板（Giscus / GitHub Discussions）============
+    // 前置条件：仓库已开启 Discussions + 已安装 giscus App（见《留言板使用说明.md》）
+    var GISCUS_ENABLED = true;
+
+    var GISCUS_CONFIG = {
+      repo: 'heweihan02-alt/heweihan02-alt.github.io',  // 存放留言的仓库
+      repoId: 'MDEwOlJlcG9zaXRvcnkxNDI4NDE5MDcy',        // 仓库 ID（已算好，一般不用改）
+      category: 'Announcements',                          // 留言存放的讨论分类
+      mapping: 'specific',                                // 用固定标题对应到留言帖
+      term: 'Guestbook',                                  // 留言帖标题
+      theme: 'transparent_dark',                          // 深色透明主题，贴合玻璃卡片
+      lang: 'zh-CN'                                       // 界面语言
+    };
+
+    var box = document.getElementById('giscus');
+    var wait = document.getElementById('gbWait');
+
+    if (!GISCUS_ENABLED) return; // 未完成设置：保持占位显示，不加载也不报错
+
+    if (box) box.hidden = false;
+
+    var s = document.createElement('script');
+    s.src = 'https://giscus.app/client.js';
+    s.setAttribute('data-repo', GISCUS_CONFIG.repo);
+    s.setAttribute('data-repo-id', GISCUS_CONFIG.repoId);
+    s.setAttribute('data-category', GISCUS_CONFIG.category);
+    s.setAttribute('data-mapping', GISCUS_CONFIG.mapping);
+    s.setAttribute('data-term', GISCUS_CONFIG.term);
+    s.setAttribute('data-strict', '0');
+    s.setAttribute('data-reactions-enabled', '1');
+    s.setAttribute('data-emit-metadata', '0');
+    s.setAttribute('data-input-position', 'top');
+    s.setAttribute('data-theme', GISCUS_CONFIG.theme);
+    s.setAttribute('data-lang', GISCUS_CONFIG.lang);
+    s.setAttribute('crossorigin', 'anonymous');
+    s.async = true;
+    document.head.appendChild(s);
+
+    // 留言框加载成功后再收起占位；迟迟不出现就提示可能是网络问题
+    var tries = 0;
+    var poll = setInterval(function () {
+      tries += 1;
+      var frame = document.querySelector('.giscus-frame');
+      if (frame) {
+        clearInterval(poll);
+        frame.addEventListener('load', function () {
+          if (wait) wait.hidden = true;
+        });
+        return;
+      }
+      if (tries === 25) {
+        var note = wait && wait.querySelector('.gb-wait-sub');
+        if (note) note.textContent = '正在加载留言板…如果一直不出现，多半是网络访问 giscus.app 不畅，稍后刷新再试。';
+      }
+    }, 400);
   })();
 </script>
 </body>
