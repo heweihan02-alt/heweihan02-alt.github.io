@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -40,75 +40,102 @@
   }
   .bg-video.on { opacity: 1; }
 
-  /* ===== 卡片 ===== */
+  /* ===== 卡片：液态玻璃 ===== */
   .card {
     position: relative;
     z-index: 1;
     max-width: 640px;
     width: 100%;
     background:
-      linear-gradient(150deg,
-        rgba(255, 255, 255, .07) 0%,
-        rgba(255, 255, 255, .02) 24%,
-        rgba(6, 9, 14, .55) 62%,
+      /* 顶部斜射入的环境光 */
+      linear-gradient(158deg,
+        rgba(255, 255, 255, .10) 0%,
+        rgba(255, 255, 255, .025) 18%,
+        rgba(255, 255, 255, 0) 42%,
+        rgba(255, 255, 255, 0) 78%,
         rgba(255, 255, 255, .04) 100%),
-      rgba(9, 12, 18, .66);
-    backdrop-filter: blur(26px) saturate(170%);
-    -webkit-backdrop-filter: blur(26px) saturate(170%);
-    border: 1px solid rgba(255, 255, 255, .13);
-    border-radius: 18px;
+      /* 极薄深色底，保证文字可读 */
+      rgba(7, 10, 16, .18);
+    backdrop-filter: blur(16px) saturate(200%) brightness(1.08);
+    -webkit-backdrop-filter: blur(16px) saturate(200%) brightness(1.08);
+    border: none;
+    border-radius: 24px;
     padding: 40px 32px;
     overflow: hidden;
     transform-style: preserve-3d;
     box-shadow:
-      0 30px 70px -30px rgba(0, 0, 0, .85),
-      inset 0 1px 0 rgba(255, 255, 255, .22),
-      inset 0 -1px 0 rgba(0, 0, 0, .35);
-    transition: transform .35s cubic-bezier(.2, .8, .2, 1), box-shadow .35s ease, border-color .35s ease;
-    animation: cardIn .8s cubic-bezier(.2, .8, .2, 1) backwards;
+      /* 环境投影：随视角反向偏移，增强悬浮感 */
+      calc(var(--px, 0) * -22px) calc(30px + var(--py, 0) * -16px) 70px -30px rgba(0, 0, 0, .85),
+      /* 上缘高光：光打在玻璃边缘 */
+      inset 0 1.5px 0 rgba(255, 255, 255, .42),
+      /* 底部内侧微光 */
+      inset 0 -14px 30px -18px rgba(255, 255, 255, .28),
+      inset 0 -1px 0 rgba(255, 255, 255, .10);
+    transition: transform .35s cubic-bezier(.2, .8, .2, 1), box-shadow .35s ease;
+    animation: cardIn .8s cubic-bezier(.2, .8, .2, 1) backwards,
+               floatY 7s ease-in-out 1.2s infinite;
   }
   @keyframes cardIn {
     from { opacity: 0; transform: translateY(26px) scale(.97); }
     to   { opacity: 1; transform: translateY(0) scale(1); }
   }
+  /* 悬浮呼吸：用 translate 属性，和 JS 控制的 transform 倾斜互不干扰 */
+  @keyframes floatY {
+    0%, 100% { translate: 0 0; }
+    50%      { translate: 0 -8px; }
+  }
   .card:hover {
-    border-color: rgba(255, 255, 255, .24);
     box-shadow:
-      0 34px 80px -30px rgba(59, 130, 246, .45),
-      inset 0 1px 0 rgba(255, 255, 255, .30),
-      inset 0 -1px 0 rgba(0, 0, 0, .35);
+      calc(var(--px, 0) * -22px) calc(34px + var(--py, 0) * -16px) 80px -30px rgba(59, 130, 246, .45),
+      inset 0 1.5px 0 rgba(255, 255, 255, .55),
+      inset 0 -14px 30px -18px rgba(255, 255, 255, .36),
+      inset 0 -1px 0 rgba(255, 255, 255, .14);
   }
 
-  /* 玻璃上缓慢划过的高光 */
+  /* 立体分层：越“靠近”观看者的层，视差位移越大 */
+  h1, .sub, p, .tags, footer {
+    transition: translate .35s cubic-bezier(.2, .8, .2, 1);
+  }
+  h1      { translate: calc(var(--px, 0) * 10px) calc(var(--py, 0) * 8px); }
+  .sub    { translate: calc(var(--px, 0) * 7px)  calc(var(--py, 0) * 5px); }
+  p       { translate: calc(var(--px, 0) * 5px)  calc(var(--py, 0) * 4px); }
+  .tags   { translate: calc(var(--px, 0) * 8px)  calc(var(--py, 0) * 6px); }
+  .card a { translate: calc(var(--px, 0) * 12px) calc(var(--py, 0) * 9px); }
+  footer  { translate: calc(var(--px, 0) * 3px)  calc(var(--py, 0) * 2px); }
+
+  /* 玻璃上缓慢划过的高光（更宽更柔，像天光掠过） */
   .sheen {
     position: absolute;
     top: -60%;
     left: -80%;
-    width: 55%;
+    width: 70%;
     height: 220%;
     pointer-events: none;
     background: linear-gradient(90deg,
       transparent,
-      rgba(255, 255, 255, .10) 42%,
-      rgba(255, 255, 255, .20) 50%,
-      rgba(255, 255, 255, .10) 58%,
+      rgba(255, 255, 255, .05) 30%,
+      rgba(255, 255, 255, .14) 48%,
+      rgba(255, 255, 255, .22) 50%,
+      rgba(255, 255, 255, .14) 52%,
+      rgba(255, 255, 255, .05) 70%,
       transparent);
-    transform: rotate(20deg);
-    animation: sheenMove 8s ease-in-out 1.4s infinite;
+    transform: rotate(18deg);
+    animation: sheenMove 9s ease-in-out 1.4s infinite;
   }
   @keyframes sheenMove {
-    0%        { transform: translateX(0) rotate(20deg); }
-    72%, 100% { transform: translateX(340%) rotate(20deg); }
+    0%        { transform: translateX(0) rotate(18deg); }
+    72%, 100% { transform: translateX(300%) rotate(18deg); }
   }
 
-  /* 鼠标跟随光晕 */
+  /* 鼠标跟随光晕（白里透蓝的“液体”高光） */
   .card::before {
     content: "";
     position: absolute;
     inset: 0;
     background: radial-gradient(
-      320px circle at var(--mx, 50%) var(--my, 50%),
-      rgba(59, 130, 246, .18),
+      380px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(255, 255, 255, .16),
+      rgba(120, 170, 255, .10) 42%,
       transparent 70%
     );
     opacity: 0;
@@ -117,17 +144,63 @@
   }
   .card:hover::before { opacity: 1; }
 
-  /* 顶部流光描边 */
+  /* 折射边缘：整圈渐变描边，亮点随鼠标沿边缘流动 */
   .card::after {
     content: "";
     position: absolute;
-    top: 0; left: -100%;
-    width: 100%; height: 1px;
-    background: linear-gradient(90deg, transparent, #60a5fa, #a855f7, transparent);
-    animation: borderSweep 5s linear infinite;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.2px;
+    background:
+      radial-gradient(130px 130px at var(--mx, 50%) var(--my, 50%),
+        rgba(255, 255, 255, .9), transparent 70%),
+      linear-gradient(155deg,
+        rgba(255, 255, 255, .55) 0%,
+        rgba(255, 255, 255, .16) 18%,
+        rgba(255, 255, 255, .02) 42%,
+        rgba(255, 255, 255, .02) 62%,
+        rgba(255, 255, 255, .30) 100%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask-composite: exclude;
+    pointer-events: none;
   }
-  @keyframes borderSweep {
-    to { left: 100%; }
+
+  /* 静态折射环：边缘轻微发亮的玻璃厚度 */
+  .rim {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(from 210deg,
+      rgba(255, 255, 255, .06),
+      rgba(255, 255, 255, .30) 12%,
+      rgba(255, 255, 255, .05) 28%,
+      rgba(255, 255, 255, .02) 50%,
+      rgba(255, 255, 255, .20) 82%,
+      rgba(255, 255, 255, .06));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* 顶部镜面高光：液态玻璃标志性的亮边 */
+  .spec {
+    position: absolute;
+    top: 0;
+    left: 6%;
+    right: 6%;
+    height: 44%;
+    border-radius: 50% 50% 40% 40%;
+    background: radial-gradient(60% 100% at 50% 0%,
+      rgba(255, 255, 255, .22),
+      rgba(255, 255, 255, .05) 55%,
+      transparent 78%);
+    filter: blur(6px);
+    pointer-events: none;
   }
 
   /* ===== 标题 ===== */
@@ -136,6 +209,7 @@
     font-weight: 800;
     letter-spacing: .3px;
     margin-bottom: 8px;
+    text-shadow: 0 1px 10px rgba(0, 0, 0, .45);
     background: linear-gradient(90deg, #f4f6ff, #a3b8ff, #f4f6ff);
     background-size: 200% auto;
     -webkit-background-clip: text;
@@ -153,15 +227,17 @@
   }
 
   .sub {
-    color: #9aa3b8;
+    color: #aab4c8;
     font-weight: 600;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, .4);
     margin-bottom: 24px;
     animation: riseIn .7s .2s cubic-bezier(.2, .8, .2, 1) backwards;
   }
   p {
     line-height: 1.8;
     font-weight: 500;
-    color: #d3d9e6;
+    color: #dde3ee;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, .4);
     margin-bottom: 20px;
     animation: riseIn .7s .3s cubic-bezier(.2, .8, .2, 1) backwards;
   }
@@ -174,8 +250,11 @@
     margin-bottom: 28px;
   }
   .tag {
-    background: #222836;
-    color: #a8bcff;
+    background: rgba(255, 255, 255, .09);
+    border: 1px solid rgba(255, 255, 255, .14);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #cfe0ff;
     padding: 6px 12px;
     border-radius: 999px;
     font-size: 13px;
@@ -192,8 +271,9 @@
   }
   .tag:hover {
     transform: translateY(-3px) scale(1.06);
-    background: #2c3448;
-    color: #dbe6ff;
+    background: rgba(255, 255, 255, .16);
+    border-color: rgba(255, 255, 255, .28);
+    color: #e8efff;
     box-shadow: 0 8px 18px -8px rgba(59, 130, 246, .8);
   }
 
@@ -211,7 +291,8 @@
     border-radius: 8px;
     margin-right: 10px;
     transition: transform .25s cubic-bezier(.2, .8, .2, 1),
-                box-shadow .25s ease, background .25s ease;
+                box-shadow .25s ease, background .25s ease,
+                translate .3s cubic-bezier(.2, .8, .2, 1);
     animation: riseIn .7s .55s cubic-bezier(.2, .8, .2, 1) backwards;
   }
   a:hover {
@@ -291,6 +372,8 @@
 
   <div class="card" id="card">
     <div class="sheen" aria-hidden="true"></div>
+    <div class="rim" aria-hidden="true"></div>
+    <div class="spec" aria-hidden="true"></div>
     <h1>你好，我是HEWEIHAN</h1>
     <div class="sub">记录一些折腾和想法</div>
     <p>这个站点用 GitHub Pages 托管，域名通过 Cloudflare 解析。</p>
@@ -346,17 +429,20 @@
     var card = document.getElementById('card');
     var dot = document.getElementById('dot');
 
-    // 鼠标光晕跟随 + 轻微 3D 倾斜
+    // 鼠标光晕跟随 + 3D 倾斜 + 分层视差
     var raf = null;
-    var target = { rx: 0, ry: 0, mx: 50, my: 50 };
+    var hover = 0;
+    var target = { rx: 0, ry: 0, mx: 50, my: 50, px: 0, py: 0 };
 
     function apply() {
       raf = null;
       card.style.setProperty('--mx', target.mx + '%');
       card.style.setProperty('--my', target.my + '%');
+      card.style.setProperty('--px', target.px.toFixed(3));
+      card.style.setProperty('--py', target.py.toFixed(3));
       card.style.transform =
         'perspective(900px) rotateX(' + target.rx.toFixed(2) + 'deg) rotateY(' +
-        target.ry.toFixed(2) + 'deg)';
+        target.ry.toFixed(2) + 'deg) scale(' + (1 + hover * 0.015).toFixed(3) + ')';
     }
 
     function onMove(e) {
@@ -367,8 +453,10 @@
 
       target.mx = x * 100;
       target.my = y * 100;
-      target.ry = (x - 0.5) * 8;
-      target.rx = (0.5 - y) * 8;
+      target.px = x - 0.5;
+      target.py = y - 0.5;
+      target.ry = (x - 0.5) * 12;
+      target.rx = (0.5 - y) * 12;
 
       dot.style.transform = 'translate(' + pt.clientX + 'px,' + pt.clientY + 'px)';
 
@@ -377,9 +465,14 @@
 
     card.addEventListener('mousemove', onMove);
     card.addEventListener('touchmove', onMove, { passive: true });
+    card.addEventListener('mouseenter', function () {
+      hover = 1;
+      if (!raf) raf = requestAnimationFrame(apply);
+    });
 
     card.addEventListener('mouseleave', function () {
-      target.rx = 0; target.ry = 0;
+      hover = 0;
+      target.rx = 0; target.ry = 0; target.px = 0; target.py = 0;
       if (!raf) raf = requestAnimationFrame(apply);
     });
 
